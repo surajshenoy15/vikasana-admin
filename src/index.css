@@ -1,0 +1,196 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ═══════════════════════════════════════════════════════════════════
+   VIKASANA FOUNDATION — DESIGN TOKENS
+   CSS Variables drive every color. Switching .dark / .light on <html>
+   instantly re-themes the entire app with zero JS overhead.
+   ═══════════════════════════════════════════════════════════════════ */
+
+:root,
+html.dark {
+  --brand-400: #36a7f6;
+  --brand-500: #0c8ce9;
+  --brand-600: #006fc7;
+  --brand-700: #0058a2;
+  --gold-400:  #f5c842;
+  --gold-500:  #e6b820;
+  --gold-600:  #c99a10;
+
+  --bg-base:       #070b12;
+  --bg-surface:    #0c1220;
+  --bg-elevated:   #101828;
+  --bg-card:       rgba(255,255,255,0.03);
+  --bg-card-hover: rgba(255,255,255,0.055);
+  --bg-input:      rgba(255,255,255,0.05);
+
+  --border-base:   rgba(255,255,255,0.07);
+  --border-subtle: rgba(255,255,255,0.04);
+  --border-strong: rgba(255,255,255,0.14);
+  --border-input:  rgba(255,255,255,0.10);
+
+  --text-primary:   #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-muted:     #475569;
+  --text-faint:     #2d3a4e;
+
+  --sidebar-bg:     #0a0f1a;
+  --sidebar-border: rgba(255,255,255,0.07);
+  --topbar-bg:      rgba(7,11,18,0.88);
+
+  --shadow-card: 0 4px 24px rgba(0,0,0,0.4);
+  --shadow-glow: 0 0 40px -10px rgba(12,140,233,0.35);
+  --mesh-1: rgba(12,140,233,0.07);
+  --mesh-2: rgba(230,184,32,0.05);
+  --scrollbar-thumb: rgba(255,255,255,0.10);
+
+  --status-active-bg:      rgba(16,185,129,0.10);
+  --status-active-text:    #34d399;
+  --status-active-border:  rgba(16,185,129,0.22);
+  --status-pending-bg:     rgba(245,158,11,0.10);
+  --status-pending-text:   #fbbf24;
+  --status-pending-border: rgba(245,158,11,0.22);
+  --status-review-bg:      rgba(56,189,248,0.10);
+  --status-review-text:    #38bdf8;
+  --status-review-border:  rgba(56,189,248,0.22);
+  --status-inactive-bg:    rgba(239,68,68,0.10);
+  --status-inactive-text:  #f87171;
+  --status-inactive-border:rgba(239,68,68,0.22);
+}
+
+html.light {
+  --brand-400: #2196f3;
+  --brand-500: #1976d2;
+  --brand-600: #1565c0;
+  --brand-700: #0d47a1;
+  --gold-400:  #f59e0b;
+  --gold-500:  #d97706;
+  --gold-600:  #b45309;
+
+  --bg-base:       #eef2f7;
+  --bg-surface:    #ffffff;
+  --bg-elevated:   #f8fafc;
+  --bg-card:       rgba(255,255,255,0.90);
+  --bg-card-hover: rgba(255,255,255,1);
+  --bg-input:      rgba(255,255,255,0.95);
+
+  --border-base:   rgba(0,0,0,0.08);
+  --border-subtle: rgba(0,0,0,0.04);
+  --border-strong: rgba(0,0,0,0.15);
+  --border-input:  rgba(0,0,0,0.12);
+
+  --text-primary:   #0f172a;
+  --text-secondary: #475569;
+  --text-muted:     #94a3b8;
+  --text-faint:     #cbd5e1;
+
+  --sidebar-bg:     #ffffff;
+  --sidebar-border: rgba(0,0,0,0.07);
+  --topbar-bg:      rgba(255,255,255,0.92);
+
+  --shadow-card: 0 1px 3px rgba(0,0,0,0.07), 0 8px 24px rgba(0,0,0,0.06);
+  --shadow-glow: 0 0 40px -10px rgba(25,118,210,0.20);
+  --mesh-1: rgba(25,118,210,0.05);
+  --mesh-2: rgba(230,184,32,0.04);
+  --scrollbar-thumb: rgba(0,0,0,0.12);
+
+  --status-active-bg:      rgba(16,185,129,0.10);
+  --status-active-text:    #059669;
+  --status-active-border:  rgba(16,185,129,0.25);
+  --status-pending-bg:     rgba(217,119,6,0.08);
+  --status-pending-text:   #b45309;
+  --status-pending-border: rgba(217,119,6,0.22);
+  --status-review-bg:      rgba(2,132,199,0.08);
+  --status-review-text:    #0369a1;
+  --status-review-border:  rgba(2,132,199,0.22);
+  --status-inactive-bg:    rgba(220,38,38,0.07);
+  --status-inactive-text:  #dc2626;
+  --status-inactive-border:rgba(220,38,38,0.20);
+}
+
+/* ═══ BASE ═════════════════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background-color: var(--bg-base);
+  color: var(--text-primary);
+  font-family: 'DM Sans', sans-serif;
+  margin: 0; padding: 0;
+}
+
+/* Smooth theme transitions on everything except animation props */
+*, *::before, *::after {
+  transition-property: background-color, border-color, color, box-shadow, fill, stroke;
+  transition-duration: 0.22s;
+  transition-timing-function: ease;
+}
+.animate-spin, [class*='animate-'] { transition-property: none !important; }
+
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 999px; }
+
+:focus-visible { outline: 2px solid var(--brand-500); outline-offset: 2px; }
+::selection { background: rgba(12,140,233,0.20); }
+
+/* ═══ UTILITIES ════════════════════════════════════════════════════ */
+@layer utilities {
+  .text-display { font-family: 'Playfair Display', Georgia, serif; }
+
+  .glass {
+    background: var(--bg-card);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--border-base);
+  }
+  .glass-hover:hover {
+    background: var(--bg-card-hover);
+    border-color: var(--border-strong);
+  }
+
+  .theme-bg      { background-color: var(--bg-base); }
+  .theme-surface { background-color: var(--bg-surface); }
+  .theme-border  { border-color: var(--border-base); }
+  .shadow-theme  { box-shadow: var(--shadow-card); }
+
+  .gradient-text {
+    background: linear-gradient(135deg, var(--brand-500), var(--brand-400), var(--gold-500));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .mesh-bg {
+    background-image:
+      radial-gradient(ellipse 80% 80% at 20% 40%, var(--mesh-1) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 60% at 80% 70%, var(--mesh-2) 0%, transparent 60%);
+  }
+
+  .animate-fade-up   { animation: fadeUp 0.45s ease forwards; }
+  .animate-fade-in   { animation: fadeIn 0.35s ease forwards; }
+  .opacity-0-start   { opacity: 0; }
+  .animate-delay-100 { animation-delay: 0.10s; }
+  .animate-delay-200 { animation-delay: 0.20s; }
+  .animate-delay-300 { animation-delay: 0.30s; }
+  .animate-delay-400 { animation-delay: 0.40s; }
+  .animate-pulse-slow { animation: pulse 3.5s cubic-bezier(0.4,0,0.6,1) infinite; }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
