@@ -2,8 +2,19 @@ import { createContext, useContext, useState, useCallback, useEffect } from "rea
 
 const AuthContext = createContext(null);
 
-const API_URL = "http://31.97.230.171:8000";
+/**
+ * ✅ API Strategy (works for both DEV + Vercel PROD)
+ * - DEV: set VITE_API_URL in .env (recommended) or fallback to VPS IP
+ * - PROD (Vercel): use same-origin "/api" so vercel.json rewrites can proxy to backend
+ *
+ * .env (local):
+ * VITE_API_URL=http://31.97.230.171:8000
+ */
 const API_PREFIX = "/api";
+const API_URL = import.meta.env.PROD
+  ? "" // ✅ Vercel production -> use same origin + rewrites
+  : import.meta.env.VITE_API_URL || "http://31.97.230.171:8000";
+
 const API_BASE = `${API_URL}${API_PREFIX}`;
 
 export const useAuth = () => {
@@ -16,27 +27,30 @@ export const AuthProvider = ({ children }) => {
   const [admin, setAdmin] = useState(null);
   const [bootstrapping, setBootstrapping] = useState(true);
 
-  // Small helper: build absolute URL always
+  // ✅ Build URL safely for both:
+  // - "/admin/events" -> `${API_BASE}/admin/events`
+  // - "/api/admin/events" -> `${API_URL}/api/admin/events` (avoids /api/api)
+  // - absolute "http(s)://..." -> as is
   const buildUrl = useCallback((path) => {
-    if (!path) return API_BASE;
-    if (typeof path !== "string") return API_BASE;
+    if (!path || typeof path !== "string") return API_BASE;
 
     // If already absolute, use as-is
     if (path.startsWith("http://") || path.startsWith("https://")) return path;
 
     // If someone passes "/api/...." avoid "/api/api/...."
+    // - PROD: API_URL="" => returns "/api/...."
+    // - DEV: API_URL="http://.." => returns "http://../api/...."
     if (path.startsWith(API_PREFIX + "/")) return `${API_URL}${path}`;
 
-    // Normal case: "/admin/events/1" => "http://...:8000/api/admin/events/1"
+    // Normal case: "/admin/events/1" => `${API_BASE}/admin/events/1`
     const normalizedPath = path.startsWith("/") ? path : `/${path}`;
     return `${API_BASE}${normalizedPath}`;
   }, []);
 
-  // ✅ Updated authFetch:
-  // - ALWAYS hits backend (never localhost:5173)
+  // ✅ authFetch:
   // - attaches token
   // - handles JSON vs FormData
-  // - optional debug log
+  // - always uses buildUrl
   const authFetch = useCallback(
     async (path, options = {}) => {
       const token = sessionStorage.getItem("vf_token");
@@ -55,7 +69,7 @@ export const AuthProvider = ({ children }) => {
         headers["Content-Type"] = "application/json";
       }
 
-      // 🔎 Debug (keep it for now; remove later)
+      // 🔎 Debug (remove later)
       console.log("[authFetch]", (options.method || "GET").toUpperCase(), url);
 
       return fetch(url, {
@@ -66,7 +80,7 @@ export const AuthProvider = ({ children }) => {
     [buildUrl]
   );
 
-  // Restore session on refresh
+  // ✅ Restore session on refresh
   useEffect(() => {
     const token = sessionStorage.getItem("vf_token");
     if (!token) {
@@ -113,7 +127,7 @@ export const AuthProvider = ({ children }) => {
 
       sessionStorage.setItem("vf_token", data.access_token);
 
-      // get admin profile
+      // ✅ get admin profile
       const meRes = await fetch(`${API_BASE}/auth/me`, {
         method: "GET",
         headers: { Authorization: `Bearer ${data.access_token}` },
