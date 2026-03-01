@@ -9,6 +9,7 @@ const NAV_ITEMS = [
   { to: '/admin/faculty',       label: 'Faculty',       icon: 'faculty'               },
   { to: '/admin/students',      label: 'Students',      icon: 'users'                 },
   { to: '/admin/activities',    label: 'Activities',    icon: 'activity'              },
+  // { to: '/admin/sessions', label: 'Sessions', icon: 'activity' },
   { to: '/admin/certificates',  label: 'Certificates',  icon: 'certificate'           },
 ]
 

@@ -13,6 +13,7 @@ import StudentsPage     from '@/pages/StudentsPage'
 import ActivitiesPage   from '@/pages/ActivitiesPage'
 import CertificatesPage from '@/pages/CertificatesPage'
 import NotFoundPage     from '@/pages/NotFoundPage'
+// import AdminSessionsPage from '@/pages/AdminSessionsPage'
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated } = useAuth()
@@ -35,6 +36,7 @@ const AppRoutes = () => (
       <Route path="faculty"      element={<FacultyPage />} />
       <Route path="students"     element={<StudentsPage />} />
       <Route path="activities"   element={<ActivitiesPage />} />
+      {/* <Route path="sessions"    element={<AdminSessionsPage />} /> */}
       <Route path="certificates" element={<CertificatesPage />} />
     </Route>
 

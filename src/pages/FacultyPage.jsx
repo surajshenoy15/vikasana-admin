@@ -7,6 +7,7 @@ import Icon from '@/components/ui/Icon'
 import Button from '@/components/ui/Button'
 import Input from '@/components/ui/Input'
 import AddFacultyModal from '@/components/AddFacultyModal'
+import ImportFacultyCsvModal from '@/components/ImportFacultyCsvModal'
 
 const FacultyPage = () => {
   const { toast } = useOutletContext() ?? {}
@@ -16,6 +17,7 @@ const FacultyPage = () => {
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
   const [showModal, setShowModal] = useState(false)
+  const [showCsvModal, setShowCsvModal] = useState(false)
   const [deletingId, setDeletingId] = useState(null)
 
   const fetchFaculty = async () => {
@@ -40,25 +42,25 @@ const FacultyPage = () => {
   }
 
   useEffect(() => {
-  if (!bootstrapping && isAuthenticated) {
-    fetchFaculty()
-  }
-}, [bootstrapping, isAuthenticated])
+    if (!bootstrapping && isAuthenticated) {
+      fetchFaculty()
+    }
+  }, [bootstrapping, isAuthenticated])
 
-  const filtered = facultyList.filter((f) =>
-    [f.full_name, f.college, f.email, f.role].some((v) =>
-      (v ?? '').toLowerCase().includes(search.toLowerCase()),
-    ),
-  )
+  const filtered = facultyList
+    .filter((f) =>
+      [f.full_name, f.college, f.email, f.role].some((v) =>
+        (v ?? '').toLowerCase().includes(search.toLowerCase()),
+      ),
+    )
+    // ✅ only show Faculty & Coordinator
+    .filter((f) => ['faculty', 'coordinator'].includes((f.role ?? '').toLowerCase()))
 
   const handleAddSuccess = ({ faculty, activation_email_sent }) => {
     setFacultyList((prev) => [faculty, ...prev])
 
-    if (activation_email_sent) {
-      toast?.success?.(`${faculty.full_name} added and activation email sent!`)
-    } else {
-      toast?.info?.(`${faculty.full_name} added. Email not sent (email not configured).`)
-    }
+    if (activation_email_sent) toast?.success?.(`${faculty.full_name} added and activation email sent!`)
+    else toast?.info?.(`${faculty.full_name} added. Email not sent (email not configured).`)
   }
 
   const handleDelete = async (id) => {
@@ -85,12 +87,19 @@ const FacultyPage = () => {
             Faculty Members
           </h2>
           <p className="text-sm mt-0.5" style={{ color: 'var(--text-muted)' }}>
-            {facultyList.length} registered · {facultyList.filter((f) => !f.is_active).length} pending activation
+            {filtered.length} shown · {filtered.filter((f) => !f.is_active).length} pending activation
           </p>
         </div>
-        <Button icon="plus" onClick={() => setShowModal(true)}>
-          Add Faculty Member
-        </Button>
+
+        <div className="flex gap-2">
+          <Button variant="secondary" icon="upload" onClick={() => setShowCsvModal(true)}>
+            Import via CSV
+          </Button>
+
+          <Button icon="plus" onClick={() => setShowModal(true)}>
+            Add Faculty Member
+          </Button>
+        </div>
       </div>
 
       <Input
@@ -136,6 +145,7 @@ const FacultyPage = () => {
                   <span className="font-semibold text-sm" style={{ color: 'var(--text-primary)' }}>
                     {f.full_name}
                   </span>
+
                   <span
                     className="inline-flex items-center px-2 py-0.5 rounded-md text-xs border"
                     style={{
@@ -144,13 +154,16 @@ const FacultyPage = () => {
                       borderColor: 'var(--border-base)',
                     }}
                   >
-                    {f.role}
+                    {(f.role ?? '').toLowerCase() === 'coordinator' ? 'Coordinator' : 'Faculty'}
                   </span>
+
                   <StatusBadge status={f.is_active ? 'Active' : 'Pending'} />
                 </div>
+
                 <p className="text-sm mt-0.5 truncate" style={{ color: 'var(--text-secondary)' }}>
                   {f.college}
                 </p>
+
                 <p className="text-xs mt-0.5 truncate flex items-center gap-1.5" style={{ color: 'var(--text-muted)' }}>
                   <Icon name="mail" size={11} /> {f.email}
                 </p>
@@ -178,6 +191,7 @@ const FacultyPage = () => {
                 >
                   <Icon name="eye" size={16} />
                 </button>
+
                 <button
                   onClick={() => handleDelete(f.id)}
                   className="p-2 rounded-xl transition-all"
@@ -199,6 +213,18 @@ const FacultyPage = () => {
         onClose={() => setShowModal(false)}
         onSuccess={handleAddSuccess}
         toast={toast}
+        // ✅ only allow these roles inside modal (requires modal support)
+        allowedRoles={['faculty', 'coordinator']}
+      />
+
+      <ImportFacultyCsvModal
+        open={showCsvModal}
+        onClose={() => setShowCsvModal(false)}
+        authFetch={authFetch}
+        toast={toast}
+        onImported={(created) => {
+          setFacultyList((prev) => [...created, ...prev])
+        }}
       />
     </div>
   )
